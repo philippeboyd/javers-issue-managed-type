@@ -32,9 +32,9 @@ public class Role extends AbstractPermission {
 	@Override
 	public String toString() {
 		return "Role{" +
-				"id='" + id + '\'' +
+				"permissions=" + permissions +
 				", name='" + name + '\'' +
-				", permissions=" + permissions +
+				", description='" + description + '\'' +
 				'}';
 	}
 }

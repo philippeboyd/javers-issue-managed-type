@@ -9,7 +9,7 @@ import java.util.Set;
 @Document
 public class Permission extends AbstractPermission implements GrantedAuthority {
 
-	private Set<String> inclusions = Sets.newHashSet();
+	private Set<String> inclusions = Sets.newHashSet("firstName");
 	private Set<String> exclusions = Sets.newHashSet();
 
 	public Permission(String name) {

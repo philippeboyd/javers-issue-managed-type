@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.io.Serializable;
 
-public abstract class AbstractPermission extends MongoBaseModel<String> implements Serializable{
+public abstract class AbstractPermission extends MongoBaseModel<String> implements Serializable {
 
 	@Indexed(unique = true)
 	protected String name;

@@ -3,13 +3,12 @@ package org.javers.mongo.javersmongoproblem.controller;
 
 import com.google.common.collect.Sets;
 import org.javers.core.Javers;
-import org.javers.core.diff.Change;
-import org.javers.core.metamodel.object.CdoSnapshot;
 import org.javers.mongo.javersmongoproblem.domain.CoreOperation;
 import org.javers.mongo.javersmongoproblem.domain.Permission;
 import org.javers.mongo.javersmongoproblem.domain.Role;
 import org.javers.mongo.javersmongoproblem.repository.PermissionRepository;
 import org.javers.mongo.javersmongoproblem.repository.RoleRepository;
+import org.javers.repository.jql.JqlQuery;
 import org.javers.repository.jql.QueryBuilder;
 import org.javers.shadow.Shadow;
 import org.slf4j.Logger;
@@ -38,12 +37,8 @@ public class TestController {
 	@PostConstruct
 	private void createTestUsers() {
 
-		Role roleSuperAdmin = new Role("SUPER_ADMIN");
-		roleSuperAdmin = roleRepository.save(roleSuperAdmin);
-
 		for (CoreOperation coreOperation : CoreOperation.values()) {
-			Permission permission = permissionRepository.save(new Permission(coreOperation.name() + "_USER"));
-			roleSuperAdmin.getPermissions().add(permission);
+			permissionRepository.save(new Permission(coreOperation.name() + "_USER"));
 		}
 
 		permissionRepository.findAll().forEach(System.out::println);
@@ -62,51 +57,29 @@ public class TestController {
 
 		Role roleAdmin = new Role("ADMIN");
 		roleAdmin.setPermissions(Sets.newHashSet(permissionReadUser, permissionViewUser, permissionCountUser, permissionExistsUser, permissionCreateUser, permissionUpdateUser));
+		roleAdmin = roleRepository.save(roleAdmin); // First version of role admin (6 permissions)
 
-		Role roleUser = new Role("USER");
-
-		roleSuperAdmin = roleRepository.save(roleSuperAdmin);
-		roleAdmin = roleRepository.save(roleAdmin);
-		roleUser = roleRepository.save(roleUser);
+		roleAdmin.setDescription("Admin role :D");
+		roleAdmin = roleRepository.save(roleAdmin); // Second version of role admin (6 permissions + description)
 
 		roleAdmin.getPermissions().add(permissionDisableUser);
 		roleAdmin.getPermissions().add(permissionDeleteUser);
-		roleAdmin = roleRepository.save(roleAdmin);
-
-		System.out.println(roleSuperAdmin);
-
-		QueryBuilder jqlQuery = QueryBuilder.byInstanceId(roleSuperAdmin.getId(), Role.class);
-
-		List<Change> changes = javers.findChanges(jqlQuery.build());
-		List<Shadow<Role>> shadows = javers.findShadows(jqlQuery.build());
-		List<CdoSnapshot> snapshots = javers.findSnapshots(jqlQuery.build());
-
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-		changes.forEach(e -> System.out.println(e));
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-		shadows.forEach(e -> System.out.println(e.get()));
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-		snapshots.forEach(e -> System.out.println(e.getChanged()));
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-
-		System.out.println(javers.getJsonConverter().toJson(changes));
+		roleAdmin = roleRepository.save(roleAdmin); // Third version of role admin (8 permissions + description)
 
 
+		System.out.println("roleAdmin permission size : " + roleAdmin.getPermissions().size());
 
-		QueryBuilder jqlQuery2 = QueryBuilder.byInstanceId(permissionReadUser.getId(), Permission.class);
+		JqlQuery jqlQuery = QueryBuilder.byInstanceId(roleAdmin.getId(), Role.class)
+				.withChildValueObjects()
+//				.withScopeCommitDeep()
+				.withScopeDeepPlus()
+				.build();
 
-		List<Change> changes2 = javers.findChanges(jqlQuery2.build());
-		List<Shadow<Role>> shadows2 = javers.findShadows(jqlQuery2.build());
-		List<CdoSnapshot> snapshots2 = javers.findSnapshots(jqlQuery2.build());
+		List<Shadow<Role>> shadows = javers.findShadows(jqlQuery);
 
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-		changes2.forEach(e -> System.out.println(e));
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-		shadows2.forEach(e -> System.out.println(e.get()));
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-		snapshots2.forEach(e -> System.out.println(e.getChanged()));
-		System.out.println("-----------------------------------------------------------------------------------------------------");
-
-		System.out.println(javers.getJsonConverter().toJson(changes2));
+		shadows.forEach(e -> {
+			System.out.println(e.get());
+			System.out.println("SNAPSHOT roleAdmin permission size : " + e.get().getPermissions().size());
+		});
 	}
 }
