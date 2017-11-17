@@ -1,7 +1,7 @@
 package org.javers.mongo.javersmongoproblem.controller;
 
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.javers.core.Javers;
 import org.javers.mongo.javersmongoproblem.domain.CoreOperation;
 import org.javers.mongo.javersmongoproblem.domain.Permission;
@@ -56,12 +56,13 @@ public class TestController {
 
 
 		Role roleAdmin = new Role("ADMIN");
-		roleAdmin.setPermissions(Sets.newHashSet(permissionReadUser, permissionViewUser, permissionCountUser, permissionExistsUser, permissionCreateUser, permissionUpdateUser));
+		roleAdmin.setPermissions(Lists.newArrayList(permissionReadUser, permissionViewUser, permissionCountUser, permissionExistsUser, permissionCreateUser));
 		roleAdmin = roleRepository.save(roleAdmin); // First version of role admin (6 permissions)
 
 		roleAdmin.setDescription("Admin role :D");
 		roleAdmin = roleRepository.save(roleAdmin); // Second version of role admin (6 permissions + description)
 
+		roleAdmin.getPermissions().add(permissionUpdateUser);
 		roleAdmin.getPermissions().add(permissionDisableUser);
 		roleAdmin.getPermissions().add(permissionDeleteUser);
 		roleAdmin = roleRepository.save(roleAdmin); // Third version of role admin (8 permissions + description)

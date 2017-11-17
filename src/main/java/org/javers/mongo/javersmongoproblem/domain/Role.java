@@ -1,16 +1,16 @@
 package org.javers.mongo.javersmongoproblem.domain;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Set;
+import java.util.List;
 
 @Document
 public class Role extends AbstractPermission {
 
 	@DBRef
-	private Set<Permission> permissions;
+	private List<Permission> permissions;
 
 	public Role(String name) {
 		this(name, new Permission[]{});
@@ -18,14 +18,14 @@ public class Role extends AbstractPermission {
 
 	public Role(String name, Permission... permissions) {
 		super(name);
-		setPermissions(Sets.newHashSet(permissions));
+		setPermissions(Lists.newArrayList(permissions));
 	}
 
-	public Set<Permission> getPermissions() {
+	public List<Permission> getPermissions() {
 		return permissions;
 	}
 
-	public void setPermissions(Set<Permission> permissions) {
+	public void setPermissions(List<Permission> permissions) {
 		this.permissions = permissions;
 	}
 
