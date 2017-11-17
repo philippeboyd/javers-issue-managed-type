@@ -1,0 +1,1 @@
+# javers-issue-managed-type
