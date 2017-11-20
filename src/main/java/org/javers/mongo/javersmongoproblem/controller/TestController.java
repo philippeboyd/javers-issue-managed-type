@@ -57,10 +57,10 @@ public class TestController {
 
 		Role roleAdmin = new Role("ADMIN");
 		roleAdmin.setPermissions(Lists.newArrayList(permissionReadUser, permissionViewUser, permissionCountUser, permissionExistsUser, permissionCreateUser));
-		roleAdmin = roleRepository.save(roleAdmin); // First version of role admin (6 permissions)
+		roleAdmin = roleRepository.save(roleAdmin); // First version of role admin (5 permissions)
 
 		roleAdmin.setDescription("Admin role :D");
-		roleAdmin = roleRepository.save(roleAdmin); // Second version of role admin (6 permissions + description)
+		roleAdmin = roleRepository.save(roleAdmin); // Second version of role admin (5 permissions + description)
 
 		roleAdmin.getPermissions().add(permissionUpdateUser);
 		roleAdmin.getPermissions().add(permissionDisableUser);
